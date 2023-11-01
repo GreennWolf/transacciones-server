@@ -1,675 +1,488 @@
-import express from 'express';
-import { Server } from 'socket.io';
-import http, { validateHeaderValue } from 'http';
-import mysql from 'mysql';
-import cors from 'cors';
+    import express from 'express';
+    import { Server } from 'socket.io';
+    import http, { validateHeaderValue } from 'http';
+    import mysql from 'mysql';
+    import cors from 'cors';
 
-var con = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'hospital',
-});
+    var agricoinID = []
+    var converciones = []
+    var inventario = []
+    const PORT = 3306
 
-con.connect(function (err) {
-  if (err) {
-    console.log('Error connecting to Db');
-    return;
-  }
-  console.log('Connection established');
-});
+    var con = mysql.createConnection({
+    host: 'b693cggu5p6zctakxeh7-mysql.services.clever-cloud.com',
+    user: 'ursmb3tdazhghxxv',
+    password: '8h1IaeK9gGIS8Phkghne',
+    database: 'b693cggu5p6zctakxeh7',
+    });
 
-const app = express();
-app.use(cors());
+    con.connect(function (err) {
+    if (err) {
+        console.log('Error connecting to Db');
+        return;
+    }
+    console.log('Connection established');
+    });
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-  },
-});
+    const app = express();
+    app.use(cors());
 
+    const server = http.createServer(app);
+    const io = new Server(server, {
+    cors: {
+        origin: '*',
+    },
+    });
 
-io.on('connection',(socket)=>{
-    // console.log('CONNECTED::' + socket.id)
-
-    socket.on('getUsuarios',()=>{
+    function getAgricoin(){
         con.query(
-            'SELECT * FROM personal',
-            function(err, usuarios) {
+            'SELECT * FROM agricoins',
+            function(err, agricoins) {
                 if (err) throw err;
-                io.emit('getUsuarios',usuarios)
-                // console.log(usuarios)
+                agricoinID = agricoins
+                io.emit('putAgricoins',agricoins)
+                console.log(agricoins)
             }
         );
-    })
+    }
 
-    socket.on('addUsuario', (datosCuenta) => {
-      const { nombre,apellido, email, password, dni,telefono,cargo,admin} = datosCuenta;
-    
-      con.query(
-        'INSERT INTO personal (nombre,apellido, email, password, dnitelefono,, idcargo,admin) VALUES (?, ?, ?, ?, ?,?,?,?)',
-        [nombre,apellido, email, password,dni,telefono, cargo,admin],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          // console.log('Cuenta insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editUsuario', (datosCuenta) => {
-      const { id, nombre,apellido, email,password, dni,telefono ,cargo,admin} = datosCuenta;
-    
-      con.query(
-        `UPDATE personal SET nombre=?,apellido = ?, email = ?, password = ?, dni = ?,telefono=?, idcargo = ? , admin=? WHERE id = ${id}`,
-        [nombre,apellido, email, password, dni,telefono ,cargo,admin],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-
-    socket.on('deleteUsuario', (id) => {
-      con.query(
-        'DELETE FROM personal WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-
-    socket.on('getLlamados',()=>{
-      con.query(
-          'SELECT * FROM llamados',
-          function(err, Llamados) {
-              if (err) throw err;
-              io.emit('getLlamados',Llamados)
-              // console.log(Llamados)
-          }
-      );
-  })
-
-  socket.on('addLlamado', (datosCuenta) => {
-    const { idpaciente, idtipo, idarea ,idzona,horario_llamada,horario_atencion,observaciones} = datosCuenta;
-  
-    con.query(
-      'INSERT INTO llamados (idpaciente, idtipo, idarea ,idzona,horario_llamada,horario_atencion,observaciones) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?)',
-      [idpaciente, idtipo, idarea ,idzona,horario_llamada,horario_atencion,observaciones],
-      function(err, result) {
-        if (err) throw err;
-        io.emit('update')
-        // console.log('Cuenta insertada con éxito');
-        // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-      }
-    );
-  });
-  
-  socket.on('editLlamado', (datosCuenta) => {
-    const { id, idpaciente,idtipo, idarea ,idzona,horario_llamada,horario_atencion,observaciones} = datosCuenta;
-  
-    con.query(
-      `UPDATE llamados SET idpaciente = ?, idtipo = ?, idarea=? ,idzona=?,horario_llamada=?,horario_atencion=?,observaciones = ? WHERE id = ${id}`,
-      [idpaciente, idtipo, idarea ,idzona,horario_llamada,horario_atencion,observaciones],
-      function(err, result) {
-        if (err) throw err;
-        // io.emit('update');
-        // console.log('Cuenta actualizada con éxito');
-        io.emit('update')
-        // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-      }
-    );
-  });
-
-  socket.on('deleteLlamados', (id) => {
-    con.query(
-      'DELETE FROM llamados WHERE id = ?',
-      [id],
-      function(err, result) {
-        if (err) throw err;
-        io.emit('update');
-        // console.log('Cuenta eliminada con éxito');
-        // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-      }
-    );
-  });
-
-    
-
-    socket.on('getPacientes',()=>{
-      con.query(
-          'SELECT * FROM pacientes',
-          function(err, Pacientes) {
-              if (err) throw err;
-              io.emit('getPacientes',Pacientes)
-              // console.log(Pacientes)
-          }
-      );
-    })
-
-    socket.on('addPaciente', (datosPacientes) => {
-      const { nombre,apellido, dni,telefono,email,nacimiento,grupoSanguineo,factor ,obraSocial, carnet,alergias,personal,area,enfermedades} = datosPacientes;
-      console.log(grupoSanguineo,factor)
-      con.query(
-        'INSERT INTO pacientes (nombre,apellido, dni,telefono,email,nacimiento,grupo_sanguineo,factor_sanguineo ,idobra_social, carnet,alergias,idpersonal,idarea ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        [nombre,apellido, dni,telefono,email,nacimiento,grupoSanguineo,factor ,obraSocial, carnet,alergias,personal,area],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          var fichaId = result.insertId;
-          enfermedades.forEach(enfermedad =>{
+    io.on('connection',(socket)=>{
+        // console.log('CONNECTED::' + socket.id)
+        socket.on('getUsuarios',()=>{
             con.query(
-              'INSERT INTO paciente_enfermedad (idpaciente,idenfermedad) VALUES (?,?)',
-              [fichaId,enfermedad],
-              function(err, result) {
-                if (err) throw err;
-                io.emit('update')
-                // console.log('Cuenta insertada con éxito');
-                // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-              }
+                'SELECT * FROM usuarios',
+                function(err, usuarios) {
+                    if (err) throw err;
+                    io.emit('putUsuarios',usuarios)
+                    // console.log(usuarios)
+                }
             );
-          })
-          // console.log('Cuenta insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editPaciente', (datosPacientes) => {
-      const {id, nombre,apellido, dni,telefono,email,nacimiento,grupoSanguineo,factor ,obraSocial, carnet,alergias,personal,area,enfermedades} = datosPacientes;
-    
-      con.query(
-        `UPDATE pacientes SET nombre=?,apellido=?, dni=?,telefono=?,email=?,nacimiento=?,grupo_sanguineo=?,factor_sanguineo=? ,idobra_social=?, carnet=?,alergias = ?,idpersonal=?,idarea=? WHERE id = ${id}`,
-        [nombre,apellido, dni,telefono,email,nacimiento,grupoSanguineo,factor ,obraSocial, carnet,alergias,personal,area],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          var fichaId = id;
-          enfermedades.forEach(enfermedad =>{
+        })
+
+        socket.on('getAgricoins',()=>{
+            getAgricoin()
+        })
+
+        socket.on('getSectores',()=>{
             con.query(
-              'INSERT INTO paciente_enfermedad (idpaciente,idenfermedad) VALUES (?,?)',
-              [fichaId,enfermedad],
-              function(err, result) {
-                if (err) throw err;
-                io.emit('update')
-                // console.log('Cuenta insertada con éxito');
-                // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-              }
+                'SELECT * FROM sectores',
+                function(err, sectores) {
+                    if (err) throw err;
+                    io.emit('putSectores',sectores)
+                    // console.log(sectores)
+                }
             );
-          })
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        })
 
-    socket.on('deletePaciente', (id) => {
-      con.query(
-        'DELETE FROM pacientes WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('getProductos',()=>{
+            con.query(
+                'SELECT * FROM productos',
+                function(err, productos) {
+                    if (err) throw err;
+                    io.emit('putProductos',productos)
+                    // console.log(productos)
+                }
+            );
+        })
 
-    socket.on('getAreas',()=>{
-      con.query(
-          'SELECT * FROM areas',
-          function(err, areas) {
-              if (err) throw err;
-              io.emit('getAreas',areas)
-              // console.log(areas)
-          }
-      );
-  })
+        socket.on('getTransacciones',()=>{
+            con.query(
+                'SELECT * FROM transacciones',
+                function(err, Transacciones) {
+                    if (err) throw err;
+                    io.emit('putTransacciones',Transacciones)
+                    // console.log(Transacciones)
+                }
+            );
+        })
 
-    socket.on('addArea', (datosAreas) => {
-      const { nombre} = datosAreas;
-    
-      con.query(
-        'INSERT INTO areas (nombre) VALUES (?)',
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          console.log('Area insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editArea', (datosAreas) => {
-      const { id, nombre} = datosAreas;
-    
-      con.query(
-        `UPDATE areas SET nombre = ? WHERE id = ${id}`,
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('getTransaccionesPen',()=>{
+            con.query(
+                'SELECT * FROM transacciones_pen',
+                function(err, Transacciones_pen) {
+                    if (err) throw err;
+                    io.emit('putTransaccionesPen',Transacciones_pen)
+                    // console.log(Transacciones_pen)
+                }
+            );
+        })
 
-    socket.on('deleteArea', (id) => {
-      con.query(
-        'DELETE FROM areas WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('getCargos',()=>{
+            con.query(
+                'SELECT * FROM cargos',
+                function(err, cargos) {
+                    if (err) throw err;
+                    io.emit('putCargos',cargos)
+                    console.log(cargos)
+                }
+            );
+        })
 
-    socket.on('getZonas',()=>{
-      con.query(
-          'SELECT * FROM zonas',
-          function(err, Zonas) {
-              if (err) throw err;
-              io.emit('getZonas',Zonas)
-              // console.log(Zonas)
-          }
-      );
-  })
+        socket.on('getConversiones',()=>{
+            con.query(
+                'SELECT * FROM conversiones',
+                function(err, conversionesDB) {
+                    if (err) throw err;
+                    converciones = conversionesDB
+                    io.emit('putConversiones',conversionesDB)
+                    console.log(conversionesDB)
+                }
+            );
+        })
 
-    socket.on('addZona', (datosZonas) => {
-      const { nombre} = datosZonas;
-    
-      con.query(
-        'INSERT INTO zonas (nombre) VALUES (?)',
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          // console.log('Cuenta insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editZona', (datosZonas) => {
-      const { id, nombre} = datosZonas;
-    
-      con.query(
-        `UPDATE zonas SET nombre = ? WHERE id = ${id}`,
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('deleteConversion',(id)=>{
+            con.query(
+                `DELETE FROM \`conversiones\` WHERE \`idconversion\` = '${id}'`,
+                function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosConversiones')
+                console.log("conversion eliminada:", result);
+                }
+            );
+        })
 
-    socket.on('deleteZona', (id) => {
-      con.query(
-        'DELETE FROM zonas WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    socket.on('getCargos',()=>{
-      con.query(
-          'SELECT * FROM cargos',
-          function(err, Cargos) {
-              if (err) throw err;
-              io.emit('getCargos',Cargos)
-              // console.log(Cargos)
-          }
-      );
-  })
+        socket.on('updateConversion',(data)=>{
+            const { id, idproducto,agricoin} = data;
+        
+            con.query(
+            `UPDATE conversiones SET idproducto = ? , agricoin = ? WHERE idconversion = ${id}`,
+            [idproducto,agricoin],
+            function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosConversiones');
+            }
+            );
+        })
 
-    socket.on('addCargo', (datosCargos) => {
-      const { nombre} = datosCargos;
-    
-      con.query(
-        'INSERT INTO cargos (nombre) VALUES (?)',
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          // console.log('Cuenta insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editCargos', (datosCargos) => {
-      const { id, nombre} = datosCargos;
-    
-      con.query(
-        `UPDATE cargos SET nombre = ? WHERE id = ${id}`,
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('crearConversion',(data)=>{
+            const {idproducto,agricoin} = data
+            con.query(
+                `INSERT INTO \`conversiones\` (\`idproducto\`, \`agricoin\`) VALUES ('${idproducto}','${agricoin}')`,
+                function(err, conversiones) {
+                    if (err) throw err;
+                    io.emit('cambiosConversiones')
+                }
+            ); 
+        })
 
-    socket.on('deleteCargos', (id) => {
-      con.query(
-        'DELETE FROM cargos WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('sendTransaccion',(data)=>{
+            console.log(data)
+            const {idusuario,idsectorO,idsectorD,idproducto,cantidad,fecha} = data
+            con.query(
+                `INSERT INTO \`transacciones_pen\` (\`idusuario\`, \`idsector_o\`, \`idsector_d\`, \`idproducto\`, \`cantidad\`, \`fecha\`) VALUES ('${idusuario}','${idsectorO}','${idsectorD}','${idproducto}','${cantidad}','${fecha}')`,
+                function(err, Transacciones) {
+                    if (err) throw err;
+                    console.log(Transacciones)
+                    io.emit('cambiosTransacciones')
+                }
+            );        
+        })
 
-    socket.on('getTipos',()=>{
-      con.query(
-          'SELECT * FROM tipos_llamados',
-          function(err, Tipos) {
-              if (err) throw err;
-              io.emit('getTipos',Tipos)
-              // console.log(Tipos)
-          }
-      );
-  })
+        socket.on('createAccount',(data)=>{
+            console.log(data,'data cuebta')
+            const {apenom,password,dni,cargo,admin} = data
+            console.log(admin)
+            var validacion ;
+            if(admin){
+                validacion = 1
+            }else{
+                validacion = 0
+            }
+            con.query(
+                `INSERT INTO \`usuarios\` (\`apenom\`, \`dni\`, \`password\`, \`idcargo\`, \`admin\`) VALUES ('${apenom}','${dni}','${password}','${cargo}','${validacion}')`,
+                function(err, account) {
+                    if (err) throw err;
+                    console.log(account)
+                    io.emit('cambiosUser')
+                }
+            );        
+        })
 
-    socket.on('addTipo', (datosTipos) => {
-      const { nombre} = datosTipos;
-    
-      con.query(
-        'INSERT INTO tipos_llamados (nombre) VALUES (?)',
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          // console.log('Cuenta insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editTipo', (datosTipos) => {
-      const { id, nombre} = datosTipos;
-    
-      con.query(
-        `UPDATE tipos_llamados SET nombre = ? WHERE id = ${id}`,
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('updateAccount',(data)=>{
+            const { idusuario, apenom,password,dni,cargo,admin} = data;
+        
+            con.query(
+            `UPDATE usuarios SET apenom = ? , password = ? , dni=? , idcargo=?,admin = ? WHERE idusuario = ${idusuario}`,
+            [apenom,password,dni,cargo,admin],
+            function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosUser');
+            }
+            );
+        })
 
-    socket.on('deleteTipo', (id) => {
-      con.query(
-        'DELETE FROM tipos_llamados WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('deleteAccount',(id)=>{
+            con.query(
+                `DELETE FROM \`usuarios\` WHERE \`idusuario\` = '${id}'`,
+                function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosUser')
+                }
+            );
+        })
 
-    socket.on('getEnfermedades',()=>{
-      con.query(
-          'SELECT * FROM enfermedades',
-          function(err, Enfermedads) {
-              if (err) throw err;
-              io.emit('getEnfermedades',Enfermedads)
-              // console.log(Enfermedads)
-          }
-      );
-  })
+        socket.on('createSector',(data)=>{
+            console.log(data,'data sector')
+            const {nombre} = data
+            con.query(
+                `INSERT INTO \`sectores\` (\`nombre\`) VALUES ('${nombre}')`,
+                function(err, sector) {
+                    if (err) throw err;
+                    console.log(sector)
+                    con.query(
+                        `INSERT INTO \`productos\` (\`nombre\`, \`idsector\`) VALUES ('${'Agricoin'}','${sector.insertId}}')`,
+                        function(err, producto) {
+                            if (err) throw err;
+                            console.log(producto)
+                            con.query(
+                                `INSERT INTO \`inventario\` (\`idsector\`, \`idproducto\`, \`cantidad\`) VALUES ('${sector.insertId}','${producto.insertId}','${0}')`,
+                                function(err, inventario) {
+                                    if (err) throw err;
+                                    con.query(
+                                        `INSERT INTO \`agricoins\` (\`idproducto\`,\`idinventario\`) VALUES ('${producto.insertId}','${inventario.insertId}')`,
+                                        function(err, agricoins) {
+                                            if (err) throw err;
+                                            console.log(agricoins)
+                                            getAgricoin()
+                                        }
+                                    );  
+                                    console.log(inventario)
+                                    io.emit('cambiosInventario')
+                                }
+                            );  
+                            io.emit('cambiosProductos')
+                        }
+                    ); 
+                    io.emit('cambiosSectores')
+                }
+            );   
+        })
 
-    socket.on('addEnfermedad', (datosEnfermedads) => {
-      const { nombre} = datosEnfermedads;
-    
-      con.query(
-        'INSERT INTO enfermedades (nombre) VALUES (?)',
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          // console.log('Cuenta insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editEnfermedad', (datosEnfermedads) => {
-      const { id, nombre} = datosEnfermedads;
-    
-      con.query(
-        `UPDATE enfermedades SET nombre = ? WHERE id = ${id}`,
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('updateSector',(data)=>{
+            const { idsector,nombre} = data;
+        
+            con.query(
+            `UPDATE sectores SET nombre = ?  WHERE idsector = ${idsector}`,
+            [nombre],
+            function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosSectores')
+            }
+            );
+        })
 
-    socket.on('deleteEnfermedad', (id) => {
-      con.query(
-        'DELETE FROM enfermedades WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('deleteSector',(id)=>{
+            con.query(
+                `DELETE FROM \`sectores\` WHERE \`idsector\` = '${id}'`,
+                function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosSectores')
+                }
+            );
+        })
 
-    socket.on('getObraSocial',()=>{
-      con.query(
-          'SELECT * FROM obras_sociales',
-          function(err, ObraSocial) {
-              if (err) throw err;
-              io.emit('getObraSocial',ObraSocial)
-              // console.log(ObraSocial)
-          }
-      );
-  })
+        socket.on('createCargo',(data)=>{
+            console.log(data,'data sector')
+            const {cargo} = data
+            con.query(
+                `INSERT INTO \`cargos\` (\`cargo\`) VALUES ('${cargo}')`,
+                function(err, cargo) {
+                    if (err) throw err;
+                    console.log(cargo)
+                    io.emit('cambiosCargos')
+                }
+            );   
+        })
 
-    socket.on('addObraSocial', (datosObraSocial) => {
-      const { nombre} = datosObraSocial;
-      // console.log(nombre , 'creando obra social')
-      con.query(
-        'INSERT INTO obras_sociales (nombre) VALUES (?)',
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          // console.log('Cuenta insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editObraSocial', (datosObraSocial) => {
-      const { id, nombre} = datosObraSocial;
-    
-      con.query(
-        `UPDATE obras_sociales SET nombre = ? WHERE id = ${id}`,
-        [nombre],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('updateCargo',(data)=>{
+            const { idcargo,nombre} = data;
+        
+            con.query(
+            `UPDATE cargos SET cargo = ?  WHERE idcargo = ${idcargo}`,
+            [nombre],
+            function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosCargos')
+            }
+            );
+        })
 
-    socket.on('deleteObraSocial', (id) => {
-      con.query(
-        'DELETE FROM obras_sociales WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('deleteCargo',(id)=>{
+            con.query(
+                `DELETE FROM \`cargos\` WHERE \`idcargo\` = '${id}'`,
+                function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosCargos')
+                }
+            );
+        })
 
-    socket.on('getPacienteEnfermedad',()=>{
-      con.query(
-          'SELECT * FROM paciente_enfermedad',
-          function(err, PacienteEnfermedad) {
-              if (err) throw err;
-              io.emit('getPacienteEnfermedad',PacienteEnfermedad)
-              // console.log(PacienteEnfermedad)
-          }
-      );
-  })
+        socket.on('createProd',(data)=>{
+            console.log(data,'data sector')
+            const {nombre,idsector} = data
+            con.query(
+                `INSERT INTO \`productos\` (\`nombre\`, \`idsector\`) VALUES ('${nombre}','${idsector}}')`,
+                function(err, producto) {
+                    if (err) throw err;
+                    console.log(producto)
+                    
+                    con.query(
+                        `INSERT INTO \`inventario\` (\`idsector\`, \`idproducto\`, \`cantidad\`) VALUES ('${idsector}','${producto.insertId}','${0}')`,
+                        function(err, producto) {
+                            if (err) throw err;
+                            console.log(producto)
+                            io.emit('cambiosInventario')
+                        }
+                    );  
 
-    socket.on('addPacienteEnfermedad', (datosPacienteEnfermedad) => {
-      const { idpaciente,idenfermedad} = datosPacienteEnfermedad;
-    
-      con.query(
-        'INSERT INTO paciente_enfermedad (idpaciente,idenfermedad) VALUES (?,?)',
-        [idpaciente,idenfermedad],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          // console.log('Cuenta insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editPacienteEnfermedad', (datosPacienteEnfermedad) => {
-      const { id, idpaciente,idenfermedad} = datosPacienteEnfermedad;
-    
-      con.query(
-        `UPDATE paciente_enfermedad SET idpaciente=?,idenfermedad = ? WHERE id = ${id}`,
-        [idpaciente,idenfermedad],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+                    con.query(
+                        `INSERT INTO \`conversiones\` (\`idproducto\`, \`agricoin\`) VALUES ('${producto.insertId}','${1}')`,
+                        function(err, conversiones) {
+                            if (err) throw err;
+                            io.emit('cambiosConversiones')
+                        }
+                    ); 
+                    io.emit('cambiosProductos')
+                }
+            );   
+        })
 
-    socket.on('deletePacienteEnfermedad', (id) => {
-      con.query(
-        'DELETE FROM paciente_enfermedad WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('updateProducto',(data)=>{
+            const { idproducto,nombre,idsector} = data;
+        
+            con.query(
+            `UPDATE productos SET nombre = ?,idsector = ?  WHERE idproducto = ${idproducto}`,
+            [nombre,idsector],
+            function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosProductos')
+            }
+            );
+        })
 
-    socket.on('getPersonalAreas',()=>{
-      con.query(
-          'SELECT * FROM personal_areas',
-          function(err, PersonalAreas) {
-              if (err) throw err;
-              io.emit('getPersonalAreas',PersonalAreas)
-              // console.log(PersonalAreas)
-          }
-      );
-  })
+        socket.on('deleteProducto',(id)=>{
+            const agricoin = agricoinID.find(agricoin => agricoin.idproducto == id)
+            // console.log(id,agricoin,agricoinID)
+            if(agricoin == undefined){
+                con.query(
+                    `DELETE FROM \`productos\` WHERE \`idproducto\` = '${id}'`,
+                    function(err, result) {
+                    if (err) throw err;
+                    io.emit('cambiosProductos')
+                    }
+                );
+            }else{
+                io.emit('eliminarAgricoin')
+            }
+        })
 
-    socket.on('addPersonalArea', (datosPersonalAreas) => {
-      const { idpersonal,idarea} = datosPersonalAreas;
+        socket.on('getInventario',()=>{
+            con.query(
+                'SELECT * FROM inventario',
+                function(err, inventarioDb) {
+                    if (err) throw err;
+                    inventario = inventarioDb
+                    io.emit('putinventario',inventarioDb)
+                    // console.log(inventario)
+                }
+            );
+        })
 
-      console.log(idarea,'areaa')
-    
-      con.query(
-        'INSERT INTO personal_areas (idpersonal,idarea) VALUES (?,?)',
-        [idpersonal,idarea],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update')
-          console.log('p_area insertada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
-    
-    socket.on('editPersonalArea', (datosPersonalAreas) => {
-      const { id, idpersonal,idarea} = datosPersonalAreas;
-    
-      con.query(
-        `UPDATE personal_areas SET idpersonal=?,idarea = ? WHERE id = ${id}`,
-        [idpersonal,idarea],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta actualizada con éxito');
-          io.emit('update')
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('createInventario',(data)=>{
+            console.log(data,'data sector')
+            const {idsector,idproducto , cantidad} = data
+            con.query(
+                `INSERT INTO \`inventario\` (\`idsector\`, \`idproducto\`, \`cantidad\`) VALUES ('${idsector}','${idproducto}','${cantidad}')`,
+                function(err, producto) {
+                    if (err) throw err;
+                    console.log(producto)
+                    io.emit('cambiosInventario')
+                }
+            );   
+        })
 
-    socket.on('deletePersonalArea', (id) => {
-      con.query(
-        'DELETE FROM personal_areas WHERE id = ?',
-        [id],
-        function(err, result) {
-          if (err) throw err;
-          io.emit('update');
-          // console.log('Cuenta eliminada con éxito');
-          // Aquí puedes emitir un evento o realizar cualquier otra acción necesaria
-        }
-      );
-    });
+        socket.on('updateInventario',(data)=>{
+            const { id,idsector,idproducto,cantidad} = data;
+        
+            con.query(
+            `UPDATE inventario SET idsector = ?,idproducto = ? , cantidad=? WHERE idinventario = ${id}`,
+            [idsector,idproducto,cantidad],
+            function(err, result) {
+                if (err) throw err;
+                io.emit('cambiosInventario')
+            }
+            );
+        })
 
-    socket.on('alarmaAzul',(area)=>{
-      io.emit('alarmaAzul',area)
+        socket.on('deleteInventario',(id)=>{
+            const inventarioA = agricoinID.find(inventarioA => inventarioA.idinventario == id)
+            if(inventarioA == undefined){
+                con.query(
+                    `DELETE FROM \`inventario\` WHERE \`idinventario\` = '${id}'`,
+                    function(err, result) {
+                    if (err) throw err;
+                    io.emit('cambiosInventario')
+                    }
+                );
+            }else{
+                io.emit('inventarioAdeleted')
+            }
+        })
+
+        socket.on('autorizarPen',(transaccion)=>{
+            const invO = inventario.find(inv => inv.idproducto == transaccion.idproducto && inv.idsector == transaccion.idsector_o) 
+            const invD = agricoinID.find(invD => invD.idsector == transaccion.idsector_d) 
+            const conv = converciones.find(conv => conv.idproducto == transaccion.idproducto)
+            console.log(transaccion.idtransaccion_pen,'XDD')
+            var cantidadOfinal = parseInt(invO.cantidad) - parseInt(transaccion.cantidad)
+            var converFinal = parseInt(conv.agricoin) * parseInt(transaccion.cantidad)
+            var cantidadDfinal = parseInt(converFinal)
+            con.query(
+                `INSERT INTO \`transacciones\` (\`idusuario\`, \`idsector_o\`, \`idsector_d\`, \`idproducto\`, \`cantidad\`, \`fecha\`) VALUES ('${transaccion.idusuario}','${transaccion.idsector_o}','${transaccion.idsector_d}','${transaccion.idproducto}','${transaccion.cantidad}','${transaccion.fecha}')`,
+                function(err, trans) {
+                    if (err) throw err;
+                    con.query(
+                        `DELETE FROM \`transacciones_pen\` WHERE \`idtransaccion_pen\` = '${transaccion.idtransaccion_pen}'`,
+                        function(err, result) {
+                        if (err) throw err;
+                        con.query(
+                            `UPDATE inventario SET cantidad=? WHERE idinventario = ${invO.idinventario}`,
+                            [cantidadOfinal],
+                            function(err, result) {
+                            if (err) throw err;
+                            io.emit('cambiosInventario')
+                            }
+                        );
+                        con.query(
+                            `UPDATE inventario SET cantidad=? WHERE idinventario = ${invD.idinventario}`,
+                            [cantidadDfinal],
+                            function(err, result) {
+                            if (err) throw err;
+                            io.emit('cambiosInventario')
+                            io.emit('cambiosTransacciones')
+                            }
+                        );
+                        console.log("Transacción eliminada:", result);
+                        }
+                    );
+                    console.log(transaccion)
+                }
+            );   
+            io.emit('cambiosTransacciones')
+        })
+
+        socket.on('denegarPen',(id)=>{
+            con.query(
+                `DELETE FROM \`transacciones_pen\` WHERE \`idtransaccion_pen\` = '${id}'`,
+                function(err, result) {
+                if (err) throw err;
+                console.log("Transacción eliminada:", result);
+                io.emit('cambiosTransacciones')
+                }
+            );
+        })
     })
-})
 
-server.listen(5050,()=>{
-    console.log('listen port 5000')
-})
+    server.listen(PORT,()=>{
+        console.log('listen port 5000')
+    })
