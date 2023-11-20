@@ -38,12 +38,16 @@
         con.query(
             'SELECT * FROM agricoins',
             function(err, agricoins) {
+<<<<<<< HEAD
 
                 if(err){
                     console.error('Error: ' + err)
                     return
                 }
 
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 agricoins.forEach(agricoin =>{
                     agricoinID.push(agricoin)
                 })
@@ -59,10 +63,14 @@
             con.query(
                 'SELECT * FROM usuarios',
                 function(err, usuarios) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('putUsuarios',usuarios)
                     // console.log(usuarios)
                 }
@@ -77,10 +85,14 @@
             con.query(
                 'SELECT * FROM sectores',
                 function(err, sectores) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('putSectores',sectores)
                     // console.log(sectores)
                 }
@@ -91,10 +103,14 @@
             con.query(
                 'SELECT * FROM productos',
                 function(err, productos) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('putProductos',productos)
                     // console.log(productos)
                 }
@@ -105,10 +121,14 @@
             con.query(
                 'SELECT * FROM transacciones',
                 function(err, Transacciones) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('putTransacciones',Transacciones)
                     // console.log(Transacciones)
                 }
@@ -119,10 +139,14 @@
             con.query(
                 'SELECT * FROM transacciones_pen',
                 function(err, Transacciones_pen) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('putTransaccionesPen',Transacciones_pen)
                     // console.log(Transacciones_pen)
                 }
@@ -133,10 +157,14 @@
             con.query(
                 'SELECT * FROM cargos',
                 function(err, cargos) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('putCargos',cargos)
                     console.log(cargos)
                 }
@@ -147,10 +175,14 @@
             con.query(
                 'SELECT * FROM conversiones',
                 function(err, conversionesDB) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     conversionesDB.forEach(conv => {
                         converciones.push(conv)
                     });
@@ -164,10 +196,14 @@
             con.query(
                 `DELETE FROM \`conversiones\` WHERE \`idconversion\` = '${id}'`,
                 function(err, result) {
+<<<<<<< HEAD
                 if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosConversiones')
                 console.log("conversion eliminada:", result);
                 }
@@ -181,10 +217,14 @@
             `UPDATE conversiones SET idproducto = ? , agricoin = ? WHERE idconversion = ${id}`,
             [idproducto,agricoin],
             function(err, result) {
+<<<<<<< HEAD
                 if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosConversiones');
             }
             );
@@ -195,10 +235,14 @@
             con.query(
                 `INSERT INTO \`conversiones\` (\`idproducto\`, \`agricoin\`) VALUES ('${idproducto}','${agricoin}')`,
                 function(err, conversiones) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('cambiosConversiones')
                 }
             ); 
@@ -210,10 +254,14 @@
             con.query(
                 `INSERT INTO \`transacciones_pen\` (\`idusuario\`, \`idsector_o\`, \`idsector_d\`, \`idproducto\`, \`cantidad\`, \`fecha\`) VALUES ('${idusuario}','${idsectorO}','${idsectorD}','${idproducto}','${cantidad}','${fecha}')`,
                 function(err, Transacciones) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     console.log(Transacciones)
                     io.emit('cambiosTransacciones')
                 }
@@ -233,10 +281,14 @@
             con.query(
                 `INSERT INTO \`usuarios\` (\`apenom\`, \`dni\`, \`password\`, \`idcargo\`, \`admin\`) VALUES ('${apenom}','${dni}','${password}','${cargo}','${validacion}')`,
                 function(err, account) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     console.log(account)
                     io.emit('cambiosUser')
                 }
@@ -250,10 +302,14 @@
             `UPDATE usuarios SET apenom = ? , password = ? , dni=? , idcargo=?,admin = ? WHERE idusuario = ${idusuario}`,
             [apenom,password,dni,cargo,admin],
             function(err, result) {
+<<<<<<< HEAD
                 if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosUser');
             }
             );
@@ -263,10 +319,14 @@
             con.query(
                 `DELETE FROM \`usuarios\` WHERE \`idusuario\` = '${id}'`,
                 function(err, result) {
+<<<<<<< HEAD
                 if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosUser')
                 }
             );
@@ -278,22 +338,31 @@
             con.query(
                 `INSERT INTO \`sectores\` (\`nombre\`) VALUES ('${nombre}')`,
                 function(err, sector) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     console.log(sector)
                     con.query(
                         `INSERT INTO \`productos\` (\`nombre\`, \`idsector\`) VALUES ('${'Agricoin'}','${sector.insertId}')`,
                         function(err, producto) {
+<<<<<<< HEAD
                             if(err){
                                 console.error('Error: ' + err)
                                 return
                             }
+=======
+                            if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                             console.log(producto)
                             con.query(
                                 `INSERT INTO \`inventario\` (\`idsector\`, \`idproducto\`, \`cantidad\`) VALUES ('${sector.insertId}','${producto.insertId}','${0}')`,
                                 function(err, inventario) {
+<<<<<<< HEAD
                                     if(err){
                                         console.error('Error: ' + err)
                                         return
@@ -305,15 +374,26 @@
                                                 console.error('Error: ' + err)
                                                 return
                                             }
+=======
+                                    if (err) throw err;
+                                    con.query(
+                                        `INSERT INTO \`agricoins\` (\`idproducto\`,\`idsector\`,\`idinventario\`) VALUES ('${producto.insertId}','${sector.insertId}','${inventario.insertId}')`,
+                                        function(err, agricoins) {
+                                            if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                                             console.log(agricoins)
                                             getAgricoin()
                                             con.query(
                                                 `INSERT INTO \`conversiones\` (\`idproducto\`, \`agricoin\`) VALUES ('${producto.insertId}','${1}')`,
                                                 function(err, conversiones) {
+<<<<<<< HEAD
                                                     if(err){
                                                         console.error('Error: ' + err)
                                                         return
                                                     }
+=======
+                                                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                                                     io.emit('cambiosConversiones')
                                                 }
                                             ); 
@@ -338,10 +418,14 @@
             `UPDATE sectores SET nombre = ?  WHERE idsector = ${idsector}`,
             [nombre],
             function(err, result) {
+<<<<<<< HEAD
                 if(err){
                     console.error('Error: ' + err)
                     return
                 }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosSectores')
             }
             );
@@ -351,10 +435,14 @@
             con.query(
                 `DELETE FROM \`sectores\` WHERE \`idsector\` = '${id}'`,
                 function(err, result) {
+<<<<<<< HEAD
                 if(err){
                     console.error('Error: ' + err)
                     return
                 }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosSectores')
                 }
             );
@@ -366,10 +454,14 @@
             con.query(
                 `INSERT INTO \`cargos\` (\`cargo\`) VALUES ('${cargo}')`,
                 function(err, cargo) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     console.log(cargo)
                     io.emit('cambiosCargos')
                 }
@@ -383,10 +475,14 @@
             `UPDATE cargos SET cargo = ?  WHERE idcargo = ${idcargo}`,
             [nombre],
             function(err, result) {
+<<<<<<< HEAD
                 if(err){
                     console.error('Error: ' + err)
                     return
                 }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosCargos')
             }
             );
@@ -396,10 +492,14 @@
             con.query(
                 `DELETE FROM \`cargos\` WHERE \`idcargo\` = '${id}'`,
                 function(err, result) {
+<<<<<<< HEAD
                 if(err){
                     console.error('Error: ' + err)
                     return
                 }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosCargos')
                 }
             );
@@ -411,19 +511,27 @@
             con.query(
                 `INSERT INTO \`productos\` (\`nombre\`, \`idsector\`) VALUES ('${nombre}','${idsector}')`,
                 function(err, producto) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     console.log(producto)
                     
                     con.query(
                         `INSERT INTO \`inventario\` (\`idsector\`, \`idproducto\`, \`cantidad\`) VALUES ('${idsector}','${producto.insertId}','${0}')`,
                         function(err, producto) {
+<<<<<<< HEAD
                             if(err){
                                 console.error('Error: ' + err)
                                 return
                             }
+=======
+                            if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                             console.log(producto)
                             io.emit('cambiosInventario')
                         }
@@ -432,10 +540,14 @@
                     con.query(
                         `INSERT INTO \`conversiones\` (\`idproducto\`, \`agricoin\`) VALUES ('${producto.insertId}','${1}')`,
                         function(err, conversiones) {
+<<<<<<< HEAD
                             if(err){
                                 console.error('Error: ' + err)
                                 return
                             }
+=======
+                            if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                             io.emit('cambiosConversiones')
                         }
                     ); 
@@ -451,10 +563,14 @@
             `UPDATE productos SET nombre = ?,idsector = ?  WHERE idproducto = ${idproducto}`,
             [nombre,idsector],
             function(err, result) {
+<<<<<<< HEAD
                 if(err){
                     console.error('Error: ' + err)
                     return
                 }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosProductos')
             }
             );
@@ -467,10 +583,14 @@
                 con.query(
                     `DELETE FROM \`productos\` WHERE \`idproducto\` = '${id}'`,
                     function(err, result) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('cambiosProductos')
                     }
                 );
@@ -483,10 +603,14 @@
             con.query(
                 'SELECT * FROM inventario',
                 function(err, inventarioDb) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     inventarioDb.forEach(inv =>{
                         inventario.push(inv)
                     })
@@ -502,10 +626,14 @@
             con.query(
                 `INSERT INTO \`inventario\` (\`idsector\`, \`idproducto\`, \`cantidad\`) VALUES ('${idsector}','${idproducto}','${cantidad}')`,
                 function(err, producto) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     console.log(producto)
                     io.emit('cambiosInventario')
                 }
@@ -519,10 +647,14 @@
             `UPDATE inventario SET idsector = ?,idproducto = ? , cantidad=? WHERE idinventario = ${id}`,
             [idsector,idproducto,cantidad],
             function(err, result) {
+<<<<<<< HEAD
                 if(err){
                     console.error('Error: ' + err)
                     return
                 }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 io.emit('cambiosInventario')
             }
             );
@@ -534,10 +666,14 @@
                 con.query(
                     `DELETE FROM \`inventario\` WHERE \`idinventario\` = '${id}'`,
                     function(err, result) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                     io.emit('cambiosInventario')
                     }
                 );
@@ -558,6 +694,7 @@
             con.query(
                 `INSERT INTO \`transacciones\` (\`idusuario\`, \`idsector_o\`, \`idsector_d\`, \`idproducto\`, \`cantidad\`, \`fecha\`) VALUES ('${transaccion.idusuario}','${transaccion.idsector_o}','${transaccion.idsector_d}','${transaccion.idproducto}','${transaccion.cantidad}',STR_TO_DATE('${transaccion.fecha}', '%Y-%m-%dT%H:%i:%s.%fZ'))`,
                 function(err, trans) {
+<<<<<<< HEAD
                     if(err){
                         console.error('Error: ' + err)
                         return
@@ -569,14 +706,25 @@
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                    if (err) throw err;
+                    con.query(
+                        `DELETE FROM \`transacciones_pen\` WHERE \`idtransaccion_pen\` = '${transaccion.idtransaccion_pen}'`,
+                        function(err, result) {
+                        if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                         con.query(
                             `UPDATE inventario SET cantidad=? WHERE idinventario = ${invO.idinventario}`,
                             [cantidadOfinal],
                             function(err, result) {
+<<<<<<< HEAD
                             if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                            if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                             io.emit('cambiosInventario')
                             }
                         );
@@ -584,10 +732,14 @@
                             `UPDATE inventario SET cantidad=? WHERE idinventario = ${invD.idinventario}`,
                             [cantidadDfinal],
                             function(err, result) {
+<<<<<<< HEAD
                             if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                            if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                             io.emit('cambiosInventario')
                             io.emit('cambiosTransacciones')
                             }
@@ -605,10 +757,14 @@
             con.query(
                 `DELETE FROM \`transacciones_pen\` WHERE \`idtransaccion_pen\` = '${id}'`,
                 function(err, result) {
+<<<<<<< HEAD
                 if(err){
                         console.error('Error: ' + err)
                         return
                     }
+=======
+                if (err) throw err;
+>>>>>>> 396cc0ed2b1b0b3bdfc020811792ce4f24303b1f
                 console.log("Transacción eliminada:", result);
                 io.emit('cambiosTransacciones')
                 }
