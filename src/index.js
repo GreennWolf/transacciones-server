@@ -7,7 +7,7 @@
     var agricoinID = []
     var converciones = []
     var inventario = []
-    const PORT = 5000
+    const PORT = process.env.PORT
 
     var con = mysql.createConnection({
     host: 'b693cggu5p6zctakxeh7-mysql.services.clever-cloud.com',
